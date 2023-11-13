@@ -1,5 +1,6 @@
 {
-	"name": "Felizardo Massimbe",
+	"author": "Felizardo Massimbe",
+	"name": "fcc-learn-npm-package-json",
 	"dependencies": {
 		"express": "^4.14.0"
 	},
