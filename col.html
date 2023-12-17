@@ -18,9 +18,21 @@
         cursor: pointer;
       }
 
-      .preco-btn.selected {
+      .preco-btn.selected,
+      #doacao.selected {
         background-color: #4caf50;
         color: white;
+      }
+
+      #doacao {
+        border: 2px solid #ccc;
+        padding: 8px;
+        transition: border-color 0.3s ease-in-out;
+      }
+
+      #doacao:focus {
+        outline: none;
+        border-color: #4caf50;
       }
     </style>
   </head>
@@ -29,27 +41,27 @@
 
     <button
       class="preco-btn"
+      data-valor="2"
+    >
+      € 2,00
+    </button>
+    <button
+      class="preco-btn"
       data-valor="5"
     >
-      R$ 5,00
+      € 5,00
     </button>
     <button
       class="preco-btn"
       data-valor="10"
     >
-      R$ 10,00
+      € 10,00
     </button>
     <button
       class="preco-btn"
       data-valor="15"
     >
-      R$ 15,00
-    </button>
-    <button
-      class="preco-btn"
-      data-valor="20"
-    >
-      R$ 20,00
+      € 15,00
     </button>
 
     <div>
@@ -65,8 +77,9 @@
     <div id="result"></div>
 
     <script>
-      // Adiciona event listeners a todos os botões com a classe "preco-btn"
-      var botoes = document.getElementsByClassName("preco-btn");
+      var botoes = document.querySelectorAll(".preco-btn");
+      var doacaoInput = document.getElementById("doacao");
+      var resultadoElemento = document.getElementById("result");
 
       for (var i = 0; i < botoes.length; i++) {
         botoes[i].addEventListener("click", function () {
@@ -77,71 +90,54 @@
       }
 
       function verificarSelecao() {
-        // Se houver texto no campo de doação, desselecione os botões
-        var valorDoacao = document.getElementById("doacao").value;
+        var valorDoacao = parseFloat(doacaoInput.value.replace(/[^\d.]/g, ""));
 
-        if (valorDoacao.trim() !== "") {
+        if (!isNaN(valorDoacao) && valorDoacao > 0) {
           desselecionarBotoes();
+          doacaoInput.classList.add("selected");
+        } else {
+          doacaoInput.classList.remove("selected");
         }
-      }
-
-      function desselecionarBotoes() {
-        // Remove a classe 'selected' de todos os botões
-        var botoes = document.querySelectorAll(".preco-btn");
-        botoes.forEach(function (botao) {
-          botao.classList.remove("selected");
-        });
         calcularRefeicoes();
       }
 
-      function calcularRefeicoes() {
-        // Obtém o valor da doação da caixa de texto
-        var valorDoacao =
-          parseFloat(document.getElementById("doacao").value) || 0;
+      function desselecionarBotoes() {
+        botoes.forEach(function (botao) {
+          botao.classList.remove("selected");
+        });
+        doacaoInput.classList.remove("selected");
+      }
 
-        // Se houver um botão selecionado, use o valor do botão
+      function calcularRefeicoes() {
+        var valorDoacao =
+          parseFloat(doacaoInput.value.replace(/[^\d.]/g, "")) || 0;
         var botaoSelecionado = document.querySelector(".preco-btn.selected");
         var valorBotao = botaoSelecionado
           ? parseFloat(botaoSelecionado.getAttribute("data-valor"))
           : 0;
-
-        // Se houver um valor no campo de doação, use-o
         var total = valorDoacao || valorBotao;
 
-        // Defina o número de refeições com base no valor escolhido
-        let numeroDeRefeicoes;
+        var numeroDeRefeicoes;
 
-        if (valorBotao === 5) {
-          numeroDeRefeicoes = 2;
-        } else if (valorBotao === 10) {
-          numeroDeRefeicoes = 5;
-        } else if (valorBotao === 15) {
-          numeroDeRefeicoes = 8;
-        } else if (valorBotao === 20) {
-          numeroDeRefeicoes = 12;
-        }
+        // Considera que uma refeição custa 2 euros e arredonda para baixo
+        numeroDeRefeicoes = Math.floor(total / 2);
 
-        // O total inclui o valor do botão OU o valor da doação
-        const resultadoElemento = document.getElementById("result");
-        resultadoElemento.innerHTML = `Você pode ter ${numeroDeRefeicoes} refeições. Total: R$ ${total.toFixed(
+        resultadoElemento.innerHTML = `Você pode ter ${numeroDeRefeicoes} refeições. Total: € ${total.toFixed(
           2
         )}.`;
       }
 
       function limparInput() {
-        // Limpa o conteúdo do campo de texto
-        document.getElementById("doacao").value = "";
-        // Desseleciona todos os botões
+        doacaoInput.value = "";
         desselecionarBotoes();
       }
 
-      // Adiciona/Remove a classe 'selected' ao clicar nos botões
-      var botoes = document.querySelectorAll(".preco-btn");
       botoes.forEach(function (botao) {
         botao.addEventListener("click", function () {
           botoes.forEach(function (outroBotao) {
             outroBotao.classList.remove("selected");
           });
+          doacaoInput.classList.remove("selected");
           botao.classList.add("selected");
           calcularRefeicoes();
         });
