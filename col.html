@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Opções de Preço</title>
+    <style>
+      #result {
+        margin-top: 20px;
+      }
+
+      .preco-btn {
+        padding: 10px;
+        margin: 5px;
+        cursor: pointer;
+      }
+
+      .preco-btn.selected {
+        background-color: #4caf50;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Escolha uma opção de preço:</h2>
+
+    <button
+      class="preco-btn"
+      data-valor="5"
+    >
+      R$ 5,00
+    </button>
+    <button
+      class="preco-btn"
+      data-valor="10"
+    >
+      R$ 10,00
+    </button>
+    <button
+      class="preco-btn"
+      data-valor="15"
+    >
+      R$ 15,00
+    </button>
+    <button
+      class="preco-btn"
+      data-valor="20"
+    >
+      R$ 20,00
+    </button>
+
+    <div>
+      <label for="doacao">Doação adicional:</label>
+      <input
+        type="text"
+        id="doacao"
+        placeholder="Insira um valor para doação"
+        oninput="verificarSelecao()"
+      />
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+      // Adiciona event listeners a todos os botões com a classe "preco-btn"
+      var botoes = document.getElementsByClassName("preco-btn");
+
+      for (var i = 0; i < botoes.length; i++) {
+        botoes[i].addEventListener("click", function () {
+          var valorBotao = parseFloat(this.getAttribute("data-valor"));
+          limparInput();
+          mostrarRefeicoes(valorBotao);
+        });
+      }
+
+      function verificarSelecao() {
+        // Se houver texto no campo de doação, desselecione os botões
+        var valorDoacao = document.getElementById("doacao").value;
+
+        if (valorDoacao.trim() !== "") {
+          desselecionarBotoes();
+        }
+      }
+
+      function desselecionarBotoes() {
+        // Remove a classe 'selected' de todos os botões
+        var botoes = document.querySelectorAll(".preco-btn");
+        botoes.forEach(function (botao) {
+          botao.classList.remove("selected");
+        });
+        calcularRefeicoes();
+      }
+
+      function calcularRefeicoes() {
+        // Obtém o valor da doação da caixa de texto
+        var valorDoacao =
+          parseFloat(document.getElementById("doacao").value) || 0;
+
+        // Se houver um botão selecionado, use o valor do botão
+        var botaoSelecionado = document.querySelector(".preco-btn.selected");
+        var valorBotao = botaoSelecionado
+          ? parseFloat(botaoSelecionado.getAttribute("data-valor"))
+          : 0;
+
+        // Se houver um valor no campo de doação, use-o
+        var total = valorDoacao || valorBotao;
+
+        // Defina o número de refeições com base no valor escolhido
+        let numeroDeRefeicoes;
+
+        if (valorBotao === 5) {
+          numeroDeRefeicoes = 2;
+        } else if (valorBotao === 10) {
+          numeroDeRefeicoes = 5;
+        } else if (valorBotao === 15) {
+          numeroDeRefeicoes = 8;
+        } else if (valorBotao === 20) {
+          numeroDeRefeicoes = 12;
+        }
+
+        // O total inclui o valor do botão OU o valor da doação
+        const resultadoElemento = document.getElementById("result");
+        resultadoElemento.innerHTML = `Você pode ter ${numeroDeRefeicoes} refeições. Total: R$ ${total.toFixed(
+          2
+        )}.`;
+      }
+
+      function limparInput() {
+        // Limpa o conteúdo do campo de texto
+        document.getElementById("doacao").value = "";
+        // Desseleciona todos os botões
+        desselecionarBotoes();
+      }
+
+      // Adiciona/Remove a classe 'selected' ao clicar nos botões
+      var botoes = document.querySelectorAll(".preco-btn");
+      botoes.forEach(function (botao) {
+        botao.addEventListener("click", function () {
+          botoes.forEach(function (outroBotao) {
+            outroBotao.classList.remove("selected");
+          });
+          botao.classList.add("selected");
+          calcularRefeicoes();
+        });
+      });
+    </script>
+  </body>
+</html>
